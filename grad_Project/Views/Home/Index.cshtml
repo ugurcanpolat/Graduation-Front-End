@@ -1,0 +1,93 @@
+@model front_end.ViewModel.ViewModelVM
+@{
+    ViewBag.Title = "Homepage";
+}
+
+<div class="row justify-content-between">
+    <div class="col-auto">
+        <h2>Current Configurations</h2>
+    </div>
+
+    <div class="col-auto">
+        <a class="btn btn-primary" href="/create" role="button">Create Configuration</a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-12">
+    <table class="table">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col" width="10%">#</th>
+                <th scope="col" width="40%">Link</th>
+                <th scope="col" width="40%">Selected Data</th>
+                <th scope="col" width="10%"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.configurations.Count; i++)
+            {
+                var element = Model.configurations.ElementAt(i);
+
+                string str = "";
+                for (int j = 0; j < element.Value.Count; j++)
+                {
+                    if (j == 0 && element.Value.Count != 1)
+                    {
+                        str = element.Value[j].name + ", ";
+                    }
+                    else if (j < element.Value.Count - 1)
+                    {
+                        str = str + element.Value[j].name + ", ";
+                    }
+                    else
+                    {
+                        str = str + element.Value[j].name;
+                    }
+                }
+
+                <tr>
+                    <th scope="row" style="vertical-align: middle;">@(i + 1)</th>
+                    <td style="vertical-align: middle;">@element.Key</td>
+                    <td style="vertical-align: middle;">@str</td>
+                    <td><button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#@element.Key">
+                        Show</button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="4" class="hiddenRow">
+                        <div class="accordian-body collapse" id="@element.Key"> 
+                        <div class="card card-body">
+                            <table class="table">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Type</th>
+                                        <th scope="col">Screen Location</th>
+                                        <th scope="col">Modifiable</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                @for (int j = 0; j < element.Value.Count; j++)
+                                {
+                                    <tr>
+                                        <th scope="row">@(j + 1)</th>
+                                        <td>@element.Value[j].name</td>
+                                        <td>@element.Value[j].visual</td>
+                                        <td>@element.Value[j].screenLocation</td>
+                                        <td>@element.Value[j].modifiable</td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    </div>
+</div>

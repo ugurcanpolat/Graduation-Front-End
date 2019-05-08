@@ -1,0 +1,329 @@
+@{
+    ViewBag.Title = "Create";
+}
+
+@using (Html.BeginForm())
+{
+<form>
+    <fieldset>
+        @if (@ViewBag.Link == null)
+    {
+        <div class="row">
+            <div class="col-md-12">
+                <label for="link"> Link </label>
+            </div>
+        </div>
+
+        <div class="row justify-content-between">
+            <div class="form-group col">
+                <input class="form-control" name="link" placeholder="Enter the API link." />
+            </div>
+
+            <div class="form-group col-md-1">
+                <input type="submit" value="Add Link" class="btn btn-primary" role="button" />
+            </div>
+        </div>
+}
+else
+{
+        <script type="text/javascript">
+    $(document).ready(function () {
+        var configList = @Html.Raw(Json.Encode(ViewBag.Current));
+        var config = configList[0];
+
+        setTimeout(function() {
+            determineTypeSelection(config);
+        }, 10);
+
+        $("#data-name-select").change(function () {
+            var index = document.getElementById("data-name-select").selectedIndex;
+            var config = configList[index];
+
+            determineTypeSelection(config);
+        });
+
+        $("#type-select").change(function () {
+            //rehide content on change
+            $('.type-visual').hide();
+
+            var index = document.getElementById("data-name-select").selectedIndex;
+            var config = configList[index];
+            fillChartData(config);
+
+            //unhides current item
+            $('#' + $(this).val()).show(100);
+        });
+    });
+
+    function determineTypeSelection(config) {
+        $('#type-select').val(config.visual);
+
+        if (config.visual == "text") {
+            $('#type-select').children('option').attr('disabled', 'disabled');
+            $("#type-select").children("option[value^=" + "text" + "]").removeAttr('disabled');
+            $('#card-text').text(config.values[0]);
+        } else if (config.visual == "image") {
+            $('#type-select').children('option').attr('disabled', 'disabled');
+            $("#type-select").children("option[value^=" + "image" + "]").removeAttr('disabled');
+            $('#visual-img').attr("src", config.values[0]);
+        } else {
+            $('#' + $("#type-select").val()).show(100);
+            $('#type-select').children('option').attr('disabled', 'disabled');
+            $("#type-select").children("option[value^=" + "pie" + "]").removeAttr('disabled');
+            $("#type-select").children("option[value^=" + "line" + "]").removeAttr('disabled');
+            $("#type-select").children("option[value^=" + "bar" + "]").removeAttr('disabled');
+            fillChartData(config);
+        }
+
+        $('.type-visual').hide();
+        $('#' + $("#type-select").val()).show(100);
+    }
+
+    function fillChartData(config) {
+        if ($("#type-select").val() == "pie") {
+            console.log('pie');
+            var widget = $("#pie-chart").dxPieChart("instance");
+            widget.getDataSource().filter("name", "=", $("#data-name-select").val());
+            widget.getDataSource().reload();
+            widget.render();
+        } else if ($("#type-select").val() == "line") {
+            console.log('line');
+            var widget = $("#line-chart").dxChart("instance");
+            widget.getDataSource().filter("name", "=", $("#data-name-select").val());
+            widget.getDataSource().reload();
+            widget.render();
+        } else if ($("#type-select").val() == "bar"){
+            console.log('bar');
+            var widget = $("#bar-chart").dxChart("instance");
+            widget.getDataSource().filter("name", "=", $("#data-name-select").val());
+            widget.getDataSource().reload();
+            widget.render();
+        }
+    }
+        </script>
+
+    <div class="row">
+        <div class="col-md-12">
+            <label for="link"> Link </label>
+        </div>
+    </div>
+
+    <div class="row justify-content-around">
+        <div class="form-group col-10">
+            <input class="form-control" name="link" value=@ViewBag.Link readonly />
+        </div>
+
+        <p>
+            <div class="form-group col-2">
+                <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseConfigurations" aria-expanded="false" aria-controls="collapseConfigurations">
+                    Configurations
+                </button>
+            </div>
+        </p>
+
+        <div class="form-group col-12">
+            <div class="collapse" id="collapseConfigurations">
+                <div class="card card-body">
+                    <table class="table">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Screen Location</th>
+                                <th scope="col">Modifiable</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < @ViewBag.configuration.Count; i++)
+                        {
+                            @:<tr>
+                                @:<th scope="row">@(i + 1)</th>
+                                @:<td>@ViewBag.configuration[i].name</td>
+                                @:<td>@ViewBag.configuration[i].visual</td>
+                                @:<td>@ViewBag.configuration[i].screenLocation</td>
+                                @:<td>@ViewBag.configuration[i].modifiable</td>
+                            @:</tr>
+                    }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <hr />
+    </div>
+
+    <div class="form-group col-12">
+        <div class="card card-body justify-content-center align-items-center" style="height: 20rem;">
+            <div class="type-visual" id="text" style="display: none;">
+                <h1 align="center" class="card-text-center" id="card-text">Text</h1>
+            </div>
+
+            <div class="type-visual" id="image" style="display: none;">
+                <img class="img-fluid mx-auto d-block" src="" alt="Image" id="visual-img"> 
+            </div>
+
+            <div class="type-visual" id="pie" style="display: none;">
+                @(Html.DevExtreme().PieChart()
+                    .ID("pie-chart")
+                    .Size(s => s
+                        .Height(300)
+                        .Width(600))
+                    .Palette(VizPalette.Bright)
+                    .Series(s => s
+                        .Add()
+                        .ArgumentField("arg")
+                        .ValueField("value")
+                        .Label(l => l
+                            .Visible(true)
+                            .Connector(c => c
+                                .Visible(true)
+                                .Width(1))))
+                    .DataSource(ds => ds
+                        .Mvc()
+                        .Controller("Create")
+                        .LoadAction("GetChartData"))
+                    .DataSourceOptions(dso => dso
+                        .Filter("['name', '=', '']"))
+                )
+            </div>
+
+            <div class="type-visual" id="line" style="display: none;">
+                @(Html.DevExtreme().Chart()
+                    .ID("line-chart")
+                    .Palette(VizPalette.Bright)
+                    .CommonSeriesSettings(s => s
+                        .ArgumentField("arg")
+                        .ValueField("value")
+                        .Type(SeriesType.Line))
+                    .Size(s => s
+                        .Height(300)
+                        .Width(600))
+                    .ArgumentAxis(a => a
+                        .ValueMarginsEnabled(false)
+                        .DiscreteAxisDivisionMode(DiscreteAxisDivisionMode.CrossLabels)
+                        .Grid(g => g.Visible(true)))
+                    .Legend(l => l
+                        .VerticalAlignment(VerticalEdge.Bottom)
+                        .HorizontalAlignment(HorizontalAlignment.Right)
+                        .ItemTextPosition(Position.Right))
+                    .Tooltip(t => t
+                        .Enabled(true)
+                        .CustomizeTooltip(@<text>
+                            function (arg) {
+                            return {
+                            text: arg.valueText
+                            };
+                            }
+                        </text>))
+                    .DataSource(ds => ds
+                        .Mvc()
+                        .Controller("Create")
+                        .LoadAction("GetChartData"))
+                    .DataSourceOptions(dso => dso
+                        .Filter("['name', '=', '']"))
+                    .SeriesTemplate(st => st
+                        .NameField("name"))
+                )
+            </div>
+
+            <div class="type-visual" id="bar" style="display: none;">
+                @(Html.DevExtreme().Chart()
+                    .ID("bar-chart")
+                    .Size(s => s
+                        .Height(300)
+                        .Width(600))
+                    .Palette(VizPalette.Bright)
+                    .CommonSeriesSettings(s => s
+                            .ArgumentField("arg")
+                            .ValueField("value")
+                            .Type(SeriesType.Bar)
+                        )
+                    .Legend(l => l
+                           .Margin(m => m.Left(20))
+                           .VerticalAlignment(VerticalEdge.Bottom)
+                           .HorizontalAlignment(HorizontalAlignment.Right)
+                           .ItemTextPosition(Position.Right))
+                    .DataSource(ds => ds
+                            .Mvc()
+                            .Controller("Create")
+                            .LoadAction("GetChartData"))
+                    .DataSourceOptions(dso => dso
+                            .Filter("['name', '=', '']"))
+                    .SeriesTemplate(st => st
+                            .NameField("name"))
+                )
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-around">
+        <div class="col-md-12">
+            <label for="data-name-select">Data name</label>
+        </div>
+    </div>
+
+    <div class="row justify-content-around">
+        <div class="form-group col-md-10">
+            <select class="form-control" name="data-name-select" id="data-name-select">
+                @foreach (var data in @ViewBag.Current)
+            {
+                @:<option>@data.name</option>
+        }
+            </select>
+        </div>
+
+        <div class="form-group col-md-2">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="modifiable-check">
+                <label class="form-check-label" for="modifiable-check">Modifiable</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-around">
+        <div class="col-md-5">
+            <label for="type-select">Type</label>
+        </div>
+
+        <div class="col-md-7">
+            <label for="location-select">Screen Location</label>
+        </div>
+    </div>
+
+    <div class="row justify-content-around">
+        <div class="form-group col-md-5">
+            <select class="form-control" name="type-select" id="type-select">
+                <option value="text">Text</option>
+                <option value="image">Image</option>
+                <option value="pie">Pie Chart</option>
+                <option value="line">Line Chart</option>
+                <option value="bar">Bar Chart</option>
+            </select>
+        </div>
+
+        <div class="form-group col-md-5">
+            <select class="form-control" name="location-select">
+                @foreach (var location in @ViewBag.AvailableLocations)
+            {
+                @:<option>@location</option>
+        }
+            </select>
+        </div>
+
+        <div class="form-group col-md-2">
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <button type="submit" value="+" class="btn btn-secondary">+</button>
+                <button type="submit" value="save" class="btn btn-primary" name="submit">Save</button>
+            </div>
+        </div>
+    </div>
+}
+    </fieldset>
+</form>
+
+
+}

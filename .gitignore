@@ -1,0 +1,4 @@
+# Exclude macOS directory service files
+.DS_Store
+
+.vs/

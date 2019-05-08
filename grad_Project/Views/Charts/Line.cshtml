@@ -1,0 +1,43 @@
+﻿@(Html.DevExtreme().Chart()
+                    .ID("line-chart")
+                    .Palette(VizPalette.Bright)
+                    .CommonSeriesSettings(s => s
+                        .ArgumentField("arg")
+                        .ValueField("value")
+                        .Type(SeriesType.Line)
+                    )
+                    .Size(s => s
+                        .Height(300)
+                        .Width(600))
+                    .ArgumentAxis(a => a
+                        .ValueMarginsEnabled(false)
+                        .DiscreteAxisDivisionMode(DiscreteAxisDivisionMode.CrossLabels)
+                        .Grid(g => g.Visible(true))
+                    )
+                    .Legend(l => l
+                        .VerticalAlignment(VerticalEdge.Bottom)
+                        .HorizontalAlignment(HorizontalAlignment.Right)
+                        .ItemTextPosition(Position.Right)
+                    )
+                    .Tooltip(t => t
+                        .Enabled(true)
+                        .CustomizeTooltip(@<text>
+                            function (arg) {
+                            return {
+                            text: arg.valueText
+                            };
+                            }
+                        </text>)
+                    )
+                    .DataSource(ds => ds
+                        .Mvc()
+                        .Controller("Create")
+                        .LoadAction("GetChartData")
+                    )
+                    .DataSourceOptions(dso => dso
+                        .Filter("['name', '=', 'temperature']")
+                    )
+                    .SeriesTemplate(st => st
+                        .NameField("name")
+                    )
+)

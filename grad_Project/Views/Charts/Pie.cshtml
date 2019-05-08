@@ -1,0 +1,25 @@
+﻿@(Html.DevExtreme().PieChart()
+        .ID("pie-chart")
+        .Size(s => s
+            .Height(300)
+            .Width(600))
+        .Palette(VizPalette.Bright)
+        .Series(s => s
+            .Add()
+            .ArgumentField("arg")
+            .ValueField("value")
+            .Label(l => l
+                .Visible(true)
+                .Connector(c => c
+                    .Visible(true)
+                    .Width(1)
+                )
+            )
+        )
+        .DataSource(ds => ds
+            .Mvc()
+            .Controller("Create")
+            .LoadAction("GetChartData"))
+        .DataSourceOptions(dso => dso
+            .Filter("['name', '=', 'temperature']"))
+)
