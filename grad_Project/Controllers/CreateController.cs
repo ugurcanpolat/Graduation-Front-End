@@ -158,16 +158,30 @@ namespace front_end.Controllers
                 var name = collection["data-name-select"];
                 data.name = name;
 
-                var modifiable = collection["modifiable-check"];
-                data.modifiable = modifiable != null;
+                var modifiable = collection["modifiable-select"];
+                data.modifiable = modifiable == "1";
 
                 int locationOption = int.Parse(collection["location-select"]);
+
+                if (locationOption != 0)
+                {   
+                    availableLocations.Remove(locationOption);
+                }
+
                 data.screenLocation = locationOption;
 
                 var typeOption = collection["type-select"];
                 data.visual = typeOption;
 
-                availableLocations.Remove(locationOption);
+                foreach(Data entry in currentConfiguration.configuration)
+                {
+                    if (entry.name == name)
+                    {
+                        data.text = entry.text;
+                        data.labels = entry.labels;
+                        break;
+                    }
+                }
 
                 newConfiguration.configuration.Add(data);
                 ViewBag.Configuration = newConfiguration.configuration;

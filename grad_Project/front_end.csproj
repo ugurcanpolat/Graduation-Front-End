@@ -265,6 +265,7 @@
     <Content Include="Content\dx.android5.light.css" />
     <Content Include="Views\Charts\Line.cshtml" />
     <Content Include="Views\Charts\Bar.cshtml" />
+    <Content Include="Resources\info-img.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
@@ -286,6 +287,7 @@
   <ItemGroup>
     <Folder Include="Views\Create\" />
     <Folder Include="Views\Charts\" />
+    <Folder Include="Resources\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

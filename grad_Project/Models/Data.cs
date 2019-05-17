@@ -15,8 +15,10 @@ namespace front_end.Models
         public int screenLocation;
         public bool modifiable;
         public List<object> values;
+        public Labels labels;
         public string dataType;
         public List<int> arg;
+        public string text;
     }
 
     [System.Serializable]
@@ -39,5 +41,12 @@ namespace front_end.Models
         public string name { get; set; }
         public object value { get; set; }
         public int arg { get; set; }
+    }
+
+    [System.Serializable]
+    public class Labels
+    {
+        public string horizontal { get; set; }
+        public string vertical { get; set; }
     }
 }

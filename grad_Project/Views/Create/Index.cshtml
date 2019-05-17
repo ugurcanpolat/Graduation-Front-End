@@ -31,6 +31,8 @@ else
         var configList = @Html.Raw(Json.Encode(ViewBag.Current));
         var config = configList[0];
 
+        $('#modifiable-box').hide();
+
         setTimeout(function() {
             determineTypeSelection(config);
         }, 10);
@@ -56,7 +58,14 @@ else
     });
 
     function determineTypeSelection(config) {
+        var availableLocations = @Html.Raw(Json.Encode(ViewBag.AvailableLocations));
+        var lastAvailableLocation = availableLocations[0];
+        $('#location-select').val(lastAvailableLocation);
         $('#type-select').val(config.visual);
+        $('#location-select').children('option').removeAttr('disabled');
+        $("#location-select").children("option[value^=" + "0" + "]").attr('disabled', 'disabled');
+
+        $('#modifiable-box').hide();
 
         if (config.visual == "text") {
             $('#type-select').children('option').attr('disabled', 'disabled');
@@ -66,6 +75,24 @@ else
             $('#type-select').children('option').attr('disabled', 'disabled');
             $("#type-select").children("option[value^=" + "image" + "]").removeAttr('disabled');
             $('#visual-img').attr("src", config.values[0]);
+        } else if (config.visual == "data-text") {
+            $('#type-select').children('option').attr('disabled', 'disabled');
+            $("#type-select").children("option[value^=" + "data-text" + "]").removeAttr('disabled');
+            $('#card-text').text(config.text)
+            $('.type-visual').hide();
+            $('#text').show(100);
+            $('#modifiable-box').show(100);
+            return;
+        } else if (config.visual == "none") {
+            $('#location-select').val("0");
+            $('#type-select').children('option').attr('disabled', 'disabled');
+            $("#type-select").children("option[value^=" + "none" + "]").removeAttr('disabled');
+            $('#card-text').text("No Visual");
+            $('#location-select').children('option').attr('disabled', 'disabled');
+            $("#location-select").children("option[value^=" + "0" + "]").removeAttr('disabled');
+            $('.type-visual').hide();
+            $('#text').show(100);
+            return;
         } else {
             $('#' + $("#type-select").val()).show(100);
             $('#type-select').children('option').attr('disabled', 'disabled');
@@ -89,12 +116,16 @@ else
         } else if ($("#type-select").val() == "line") {
             console.log('line');
             var widget = $("#line-chart").dxChart("instance");
+            widget.option('argumentAxis.title.text', config.labels.horizontal);
+            widget.option('valueAxis.title.text', config.labels.vertical);
             widget.getDataSource().filter("name", "=", $("#data-name-select").val());
             widget.getDataSource().reload();
             widget.render();
         } else if ($("#type-select").val() == "bar"){
             console.log('bar');
             var widget = $("#bar-chart").dxChart("instance");
+            widget.option('argumentAxis.title.text', config.labels.horizontal);
+            widget.option('valueAxis.title.text', config.labels.vertical);
             widget.getDataSource().filter("name", "=", $("#data-name-select").val());
             widget.getDataSource().reload();
             widget.render();
@@ -163,98 +194,98 @@ else
             </div>
 
             <div class="type-visual" id="image" style="display: none;">
-                <img class="img-fluid mx-auto d-block" src="" alt="Image" id="visual-img"> 
+                <img class="img-fluid mx-auto d-block" src="" alt="Image" id="visual-img">
             </div>
 
             <div class="type-visual" id="pie" style="display: none;">
                 @(Html.DevExtreme().PieChart()
-                    .ID("pie-chart")
-                    .Size(s => s
-                        .Height(300)
-                        .Width(600))
-                    .Palette(VizPalette.Bright)
-                    .Series(s => s
-                        .Add()
-                        .ArgumentField("arg")
-                        .ValueField("value")
-                        .Label(l => l
-                            .Visible(true)
-                            .Connector(c => c
+                        .ID("pie-chart")
+                        .Size(s => s
+                            .Height(300)
+                            .Width(600))
+                        .Palette(VizPalette.Bright)
+                        .Series(s => s
+                            .Add()
+                            .ArgumentField("arg")
+                            .ValueField("value")
+                            .Label(l => l
                                 .Visible(true)
-                                .Width(1))))
-                    .DataSource(ds => ds
-                        .Mvc()
-                        .Controller("Create")
-                        .LoadAction("GetChartData"))
-                    .DataSourceOptions(dso => dso
-                        .Filter("['name', '=', '']"))
+                                .Connector(c => c
+                                    .Visible(true)
+                                    .Width(1))))
+                        .DataSource(ds => ds
+                            .Mvc()
+                            .Controller("Create")
+                            .LoadAction("GetChartData"))
+                        .DataSourceOptions(dso => dso
+                            .Filter("['name', '=', '']"))
                 )
             </div>
 
             <div class="type-visual" id="line" style="display: none;">
                 @(Html.DevExtreme().Chart()
-                    .ID("line-chart")
-                    .Palette(VizPalette.Bright)
-                    .CommonSeriesSettings(s => s
-                        .ArgumentField("arg")
-                        .ValueField("value")
-                        .Type(SeriesType.Line))
-                    .Size(s => s
-                        .Height(300)
-                        .Width(600))
-                    .ArgumentAxis(a => a
-                        .ValueMarginsEnabled(false)
-                        .DiscreteAxisDivisionMode(DiscreteAxisDivisionMode.CrossLabels)
-                        .Grid(g => g.Visible(true)))
-                    .Legend(l => l
-                        .VerticalAlignment(VerticalEdge.Bottom)
-                        .HorizontalAlignment(HorizontalAlignment.Right)
-                        .ItemTextPosition(Position.Right))
-                    .Tooltip(t => t
-                        .Enabled(true)
-                        .CustomizeTooltip(@<text>
-                            function (arg) {
-                            return {
-                            text: arg.valueText
-                            };
-                            }
-                        </text>))
-                    .DataSource(ds => ds
-                        .Mvc()
-                        .Controller("Create")
-                        .LoadAction("GetChartData"))
-                    .DataSourceOptions(dso => dso
-                        .Filter("['name', '=', '']"))
-                    .SeriesTemplate(st => st
-                        .NameField("name"))
+                        .ID("line-chart")
+                        .Palette(VizPalette.Bright)
+                        .CommonSeriesSettings(s => s
+                            .ArgumentField("arg")
+                            .ValueField("value")
+                            .Type(SeriesType.Line))
+                        .Size(s => s
+                            .Height(300)
+                            .Width(600))
+                        .ArgumentAxis(a => a
+                            .ValueMarginsEnabled(false)
+                            .DiscreteAxisDivisionMode(DiscreteAxisDivisionMode.CrossLabels)
+                            .Grid(g => g.Visible(true)))
+                        .Legend(l => l
+                            .VerticalAlignment(VerticalEdge.Bottom)
+                            .HorizontalAlignment(HorizontalAlignment.Right)
+                            .ItemTextPosition(Position.Right))
+                        .Tooltip(t => t
+                            .Enabled(true)
+                            .CustomizeTooltip(@<text>
+                                function (arg) {
+                                return {
+                                text: arg.valueText
+                                };
+                                }
+                            </text>))
+                        .DataSource(ds => ds
+                            .Mvc()
+                            .Controller("Create")
+                            .LoadAction("GetChartData"))
+                        .DataSourceOptions(dso => dso
+                            .Filter("['name', '=', '']"))
+                        .SeriesTemplate(st => st
+                            .NameField("name"))
                 )
             </div>
 
             <div class="type-visual" id="bar" style="display: none;">
                 @(Html.DevExtreme().Chart()
-                    .ID("bar-chart")
-                    .Size(s => s
-                        .Height(300)
-                        .Width(600))
-                    .Palette(VizPalette.Bright)
-                    .CommonSeriesSettings(s => s
-                            .ArgumentField("arg")
-                            .ValueField("value")
-                            .Type(SeriesType.Bar)
-                        )
-                    .Legend(l => l
-                           .Margin(m => m.Left(20))
-                           .VerticalAlignment(VerticalEdge.Bottom)
-                           .HorizontalAlignment(HorizontalAlignment.Right)
-                           .ItemTextPosition(Position.Right))
-                    .DataSource(ds => ds
-                            .Mvc()
-                            .Controller("Create")
-                            .LoadAction("GetChartData"))
-                    .DataSourceOptions(dso => dso
-                            .Filter("['name', '=', '']"))
-                    .SeriesTemplate(st => st
-                            .NameField("name"))
+                        .ID("bar-chart")
+                        .Size(s => s
+                            .Height(300)
+                            .Width(600))
+                        .Palette(VizPalette.Bright)
+                        .CommonSeriesSettings(s => s
+                                .ArgumentField("arg")
+                                .ValueField("value")
+                                .Type(SeriesType.Bar)
+                            )
+                        .Legend(l => l
+                               .Margin(m => m.Left(20))
+                               .VerticalAlignment(VerticalEdge.Bottom)
+                               .HorizontalAlignment(HorizontalAlignment.Right)
+                               .ItemTextPosition(Position.Right))
+                        .DataSource(ds => ds
+                                .Mvc()
+                                .Controller("Create")
+                                .LoadAction("GetChartData"))
+                        .DataSourceOptions(dso => dso
+                                .Filter("['name', '=', '']"))
+                        .SeriesTemplate(st => st
+                                .NameField("name"))
                 )
             </div>
         </div>
@@ -266,7 +297,7 @@ else
         </div>
     </div>
 
-    <div class="row justify-content-around">
+    <div class="row justify-content-around align-items-center">
         <div class="form-group col-md-10">
             <select class="form-control" name="data-name-select" id="data-name-select">
                 @foreach (var data in @ViewBag.Current)
@@ -277,13 +308,36 @@ else
         </div>
 
         <div class="form-group col-md-2">
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="modifiable-check">
-                <label class="form-check-label" for="modifiable-check">Modifiable</label>
+            <div class="input-group input-group-sm" id="modifiable-box" style="width:95%; display:none;">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="inputGroupSelect01">Modifiable</label>
+                </div>
+                <select class="custom-select" id="inputGroupSelect01" name="modifiable-select">
+                    <option selected value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
             </div>
         </div>
     </div>
 
+    <div class="row justify-content-around">
+        <div class="col-md-5">
+
+        </div>
+
+        <div class="form-group col-md-5">
+            <div class="collapse" id="info-shot">
+                <div class="card card-body">
+                    <img class="img-fluid mx-auto d-block" src="Resources/info-img.jpg" alt="Info Image" id="info-img">
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-2">
+
+        </div>
+    </div>
+    
     <div class="row justify-content-around">
         <div class="col-md-5">
             <label for="type-select">Type</label>
@@ -291,12 +345,17 @@ else
 
         <div class="col-md-7">
             <label for="location-select">Screen Location</label>
+            <button class="btn btn-outline-info btn-sm" type="button" data-toggle="collapse" data-target="#info-shot" aria-expanded="false" aria-controls="info-shot">
+                <i style="font-family:'Times New Roman', Times, serif">i</i>
+            </button>
         </div>
     </div>
 
     <div class="row justify-content-around">
         <div class="form-group col-md-5">
             <select class="form-control" name="type-select" id="type-select">
+                <option value="none">No Visual</option>
+                <option value="data-text">Data with Text</option>
                 <option value="text">Text</option>
                 <option value="image">Image</option>
                 <option value="pie">Pie Chart</option>
@@ -306,11 +365,27 @@ else
         </div>
 
         <div class="form-group col-md-5">
-            <select class="form-control" name="location-select">
+            <select class="form-control" name="location-select" id="location-select">
                 @foreach (var location in @ViewBag.AvailableLocations)
             {
-                @:<option>@location</option>
+                if (location == 1)
+                {
+                    @:<option value="@location">Top Left</option>
+            }
+            else if (location == 2)
+            {
+                @:<option value="@location">Bottom Left</option>
         }
+        else if (location == 3)
+        {
+            @:<option value="@location">Top Right</option>
+    }
+    else if (location == 4)
+    {
+        @:<option value="@location">Bottom Right</option>
+}
+}
+                <option value="0">---</option>
             </select>
         </div>
 
