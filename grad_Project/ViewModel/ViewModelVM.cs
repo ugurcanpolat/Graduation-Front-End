@@ -9,6 +9,7 @@ namespace front_end.ViewModel
 {
     public class ViewModelVM
     {
+        public Dictionary<string, string> names;
         public Dictionary<string, List<Data>> configurations;
     }
 } 

@@ -12,10 +12,11 @@ using Newtonsoft.Json;
 
 namespace front_end.Controllers
 {
-    public class CreateController : Controller
+    public class AddController : Controller
     {
         private static string link = null;
         private static string api = null;
+        private static string name = null;
         private static List<int> availableLocations = null;
         private static Configuration currentConfiguration = null;
         private static Configuration newConfiguration = null;
@@ -24,18 +25,19 @@ namespace front_end.Controllers
         {
             link = null;
             api = null;
+            name = null;
             availableLocations = null;
             currentConfiguration = null;
             newConfiguration = null;
 
-            Console.WriteLine("Create: Index()");
+            Console.WriteLine("Add: Index()");
             return View ();
         }
 
         [HttpPost]
         public ActionResult Index(FormCollection collection)
         {
-            Console.WriteLine("Create: Index(): FormCollection");
+            Console.WriteLine("Add: Index(): FormCollection");
 
             if (!string.IsNullOrEmpty(collection["submit"]))
             {
@@ -60,11 +62,11 @@ namespace front_end.Controllers
 
                     if (deserialized.success)
                     {
-                        Console.WriteLine("Create: Index(): Modify data success.");
+                        Console.WriteLine("Add: Index(): Modify data success.");
                     }
                     else
                     {
-                        Console.WriteLine("Create: Index(): Modify data failed.");
+                        Console.WriteLine("Add: Index(): Modify data failed.");
                     }
                 }
 
@@ -72,13 +74,14 @@ namespace front_end.Controllers
 
                 newConfiguration.link = link;
 
-                HomeController.AddConfiguration(newConfiguration);
+                HomeController.AddConfiguration(name, newConfiguration);
 
                 return RedirectToRoute("Homepage");
             }
 
             if (link == null)
             {
+                name = collection["application-name"];
                 link = collection["link"];
                 if (!link.StartsWith("http://", StringComparison.CurrentCultureIgnoreCase) &&
                     !link.StartsWith("https://", StringComparison.CurrentCultureIgnoreCase))
@@ -90,6 +93,7 @@ namespace front_end.Controllers
             }   
 
             ViewBag.Link = link;
+            ViewBag.AppName = name;
 
             if (currentConfiguration == null)
             {
@@ -127,6 +131,12 @@ namespace front_end.Controllers
                             configuration = deserialized.data
                         };
 
+                        for(int i = 0; i < currentConfiguration.configuration.Count;  i++)
+                        {
+                            currentConfiguration.configuration[i].readableName =
+                                ConvertStringToReadable(currentConfiguration.configuration[i].name);
+                        }
+
                         if (newConfiguration == null)
                         {
                             newConfiguration = new Configuration
@@ -155,8 +165,8 @@ namespace front_end.Controllers
             {
                 Data data = new Data();
 
-                var name = collection["data-name-select"];
-                data.name = name;
+                var dataName = collection["data-name-select"];
+                data.name = dataName;
 
                 var modifiable = collection["modifiable-select"];
                 data.modifiable = modifiable == "1";
@@ -175,13 +185,15 @@ namespace front_end.Controllers
 
                 foreach(Data entry in currentConfiguration.configuration)
                 {
-                    if (entry.name == name)
+                    if (entry.name == dataName)
                     {
                         data.text = entry.text;
                         data.labels = entry.labels;
                         break;
                     }
                 }
+
+                data.readableName = ConvertStringToReadable(dataName);
 
                 newConfiguration.configuration.Add(data);
                 ViewBag.Configuration = newConfiguration.configuration;
@@ -218,6 +230,20 @@ namespace front_end.Controllers
             var result = DataSourceLoader.Load(chartData, loadOptions);
             var resultJson = JsonConvert.SerializeObject(result);
             return Content(resultJson, "application/json");
+        }
+
+        private string ConvertStringToReadable(string dataName)
+        {
+            System.Text.StringBuilder builder = new System.Text.StringBuilder();
+            foreach (char c in dataName)
+            {
+                if (char.IsUpper(c) && builder.Length > 0) builder.Append(' ');
+                builder.Append(c);
+            }
+
+            string readableText = builder.ToString();
+            readableText = readableText.Substring(0, 1).ToUpper() + readableText.Substring(1);
+            return readableText;
         }
     }
 }

@@ -1,5 +1,5 @@
 @{
-    ViewBag.Title = "Create";
+    ViewBag.Title = "Add Application";
 }
 
 @using (Html.BeginForm())
@@ -10,23 +10,39 @@
     {
         <div class="row">
             <div class="col-md-12">
-                <label for="link"> Link </label>
+                <label for="application-name"> Application Name </label>
             </div>
         </div>
 
         <div class="row justify-content-between">
             <div class="form-group col">
-                <input class="form-control" name="link" placeholder="Enter the API link." />
+                <input class="form-control" name="application-name" placeholder="Enter the application name." />
             </div>
 
-            <div class="form-group col-md-1">
-                <input type="submit" value="Add Link" class="btn btn-primary" role="button" />
+            <div class="form-group col-md-2">
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <label for="link"> Web Service Link </label>
+            </div>
+        </div>
+
+        <div class="row justify-content-between">
+            <div class="form-group col">
+                <input class="form-control" name="link" placeholder="Enter the web service link." />
+            </div>
+
+            <div class="form-group col-md-2">
+                <input type="submit" value="Add Application" class="btn btn-primary" role="button" />
             </div>
         </div>
 }
 else
 {
-        <script type="text/javascript">
+    <script type="text/javascript">
     $(document).ready(function () {
         var configList = @Html.Raw(Json.Encode(ViewBag.Current));
         var config = configList[0];
@@ -131,23 +147,23 @@ else
             widget.render();
         }
     }
-        </script>
+    </script>
 
     <div class="row">
         <div class="col-md-12">
-            <label for="link"> Link </label>
+            <label for="application-name">Application Name</label>
         </div>
     </div>
 
     <div class="row justify-content-around">
         <div class="form-group col-10">
-            <input class="form-control" name="link" value=@ViewBag.Link readonly />
+            <input class="form-control" type="text" name="application-name" value="@ViewBag.AppName" readonly />
         </div>
 
         <p>
             <div class="form-group col-2">
                 <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseConfigurations" aria-expanded="false" aria-controls="collapseConfigurations">
-                    Configurations
+                    Data Fields
                 </button>
             </div>
         </p>
@@ -170,10 +186,40 @@ else
                         {
                             @:<tr>
                                 @:<th scope="row">@(i + 1)</th>
-                                @:<td>@ViewBag.configuration[i].name</td>
-                                @:<td>@ViewBag.configuration[i].visual</td>
-                                @:<td>@ViewBag.configuration[i].screenLocation</td>
-                                @:<td>@ViewBag.configuration[i].modifiable</td>
+                                @:<td>@ViewBag.configuration[i].readableName</td>
+                                if (ViewBag.configuration[i].visual == "line") {
+                                    @:<td>Line Chart</td>
+                                } else if (ViewBag.configuration[i].visual == "bar") {
+                                    @:<td>Bar Chart</td>
+                                } else if (ViewBag.configuration[i].visual == "pie") {
+                                    @:<td>Pie Chart</td>
+                                } else if (ViewBag.configuration[i].visual == "text") {
+                                    @:<td>Text</td>
+                                } else if (ViewBag.configuration[i].visual == "image") {
+                                    @:<td>Image</td>
+                                } else if (ViewBag.configuration[i].visual == "data-text") {
+                                    @:<td>Data with Text</td>
+                                } else {
+                                    @:<td>No Visual</td>
+                                }
+
+                                if (ViewBag.configuration[i].screenLocation == 1) {
+                                    @:<td>Top Left</td>
+                                } else if (ViewBag.configuration[i].screenLocation == 2) {
+                                    @:<td>Bottom Left</td>
+                                } else if (ViewBag.configuration[i].screenLocation == 3) {
+                                    @:<td>Top Right</td>
+                                } else if (ViewBag.configuration[i].screenLocation == 4) {
+                                    @:<td>Bottom Right</td>
+                                } else {
+                                    @:<td>---</td>
+                                }
+
+                                if (ViewBag.configuration[i].modifiable == true) {
+                                    @:<td>Yes</td>
+                                } else {
+                                    @:<td>No</td>
+                                } 
                             @:</tr>
                     }
                         </tbody>
@@ -199,93 +245,93 @@ else
 
             <div class="type-visual" id="pie" style="display: none;">
                 @(Html.DevExtreme().PieChart()
-                        .ID("pie-chart")
-                        .Size(s => s
-                            .Height(300)
-                            .Width(600))
-                        .Palette(VizPalette.Bright)
-                        .Series(s => s
-                            .Add()
-                            .ArgumentField("arg")
-                            .ValueField("value")
-                            .Label(l => l
-                                .Visible(true)
-                                .Connector(c => c
+                            .ID("pie-chart")
+                            .Size(s => s
+                                .Height(300)
+                                .Width(600))
+                            .Palette(VizPalette.Bright)
+                            .Series(s => s
+                                .Add()
+                                .ArgumentField("arg")
+                                .ValueField("value")
+                                .Label(l => l
                                     .Visible(true)
-                                    .Width(1))))
-                        .DataSource(ds => ds
-                            .Mvc()
-                            .Controller("Create")
-                            .LoadAction("GetChartData"))
-                        .DataSourceOptions(dso => dso
-                            .Filter("['name', '=', '']"))
+                                    .Connector(c => c
+                                        .Visible(true)
+                                        .Width(1))))
+                            .DataSource(ds => ds
+                                .Mvc()
+                                .Controller("Add")
+                                .LoadAction("GetChartData"))
+                            .DataSourceOptions(dso => dso
+                                .Filter("['name', '=', '']"))
                 )
             </div>
 
             <div class="type-visual" id="line" style="display: none;">
                 @(Html.DevExtreme().Chart()
-                        .ID("line-chart")
-                        .Palette(VizPalette.Bright)
-                        .CommonSeriesSettings(s => s
-                            .ArgumentField("arg")
-                            .ValueField("value")
-                            .Type(SeriesType.Line))
-                        .Size(s => s
-                            .Height(300)
-                            .Width(600))
-                        .ArgumentAxis(a => a
-                            .ValueMarginsEnabled(false)
-                            .DiscreteAxisDivisionMode(DiscreteAxisDivisionMode.CrossLabels)
-                            .Grid(g => g.Visible(true)))
-                        .Legend(l => l
-                            .VerticalAlignment(VerticalEdge.Bottom)
-                            .HorizontalAlignment(HorizontalAlignment.Right)
-                            .ItemTextPosition(Position.Right))
-                        .Tooltip(t => t
-                            .Enabled(true)
-                            .CustomizeTooltip(@<text>
-                                function (arg) {
-                                return {
-                                text: arg.valueText
-                                };
-                                }
-                            </text>))
-                        .DataSource(ds => ds
-                            .Mvc()
-                            .Controller("Create")
-                            .LoadAction("GetChartData"))
-                        .DataSourceOptions(dso => dso
-                            .Filter("['name', '=', '']"))
-                        .SeriesTemplate(st => st
-                            .NameField("name"))
+                            .ID("line-chart")
+                            .Palette(VizPalette.Bright)
+                            .CommonSeriesSettings(s => s
+                                .ArgumentField("arg")
+                                .ValueField("value")
+                                .Type(SeriesType.Line))
+                            .Size(s => s
+                                .Height(300)
+                                .Width(600))
+                            .ArgumentAxis(a => a
+                                .ValueMarginsEnabled(false)
+                                .DiscreteAxisDivisionMode(DiscreteAxisDivisionMode.CrossLabels)
+                                .Grid(g => g.Visible(true)))
+                            .Legend(l => l
+                                .VerticalAlignment(VerticalEdge.Bottom)
+                                .HorizontalAlignment(HorizontalAlignment.Right)
+                                .ItemTextPosition(Position.Right))
+                            .Tooltip(t => t
+                                .Enabled(true)
+                                .CustomizeTooltip(@<text>
+                                    function (arg) {
+                                    return {
+                                    text: arg.valueText
+                                    };
+                                    }
+                                </text>))
+                            .DataSource(ds => ds
+                                .Mvc()
+                                .Controller("Add")
+                                .LoadAction("GetChartData"))
+                            .DataSourceOptions(dso => dso
+                                .Filter("['name', '=', '']"))
+                            .SeriesTemplate(st => st
+                                .NameField("name"))
                 )
             </div>
 
             <div class="type-visual" id="bar" style="display: none;">
                 @(Html.DevExtreme().Chart()
-                        .ID("bar-chart")
-                        .Size(s => s
-                            .Height(300)
-                            .Width(600))
-                        .Palette(VizPalette.Bright)
-                        .CommonSeriesSettings(s => s
-                                .ArgumentField("arg")
-                                .ValueField("value")
-                                .Type(SeriesType.Bar)
-                            )
-                        .Legend(l => l
-                               .Margin(m => m.Left(20))
-                               .VerticalAlignment(VerticalEdge.Bottom)
-                               .HorizontalAlignment(HorizontalAlignment.Right)
-                               .ItemTextPosition(Position.Right))
-                        .DataSource(ds => ds
-                                .Mvc()
-                                .Controller("Create")
-                                .LoadAction("GetChartData"))
-                        .DataSourceOptions(dso => dso
-                                .Filter("['name', '=', '']"))
-                        .SeriesTemplate(st => st
-                                .NameField("name"))
+                            .ID("bar-chart")
+                            .Size(s => s
+                                .Height(300)
+                                .Width(600))
+                            .Palette(VizPalette.Bright)
+                            .CommonSeriesSettings(s => s
+                                    .ArgumentField("arg")
+                                    .ValueField("value")
+                                    .Type(SeriesType.Bar)
+                                )
+                            .Legend(l => l
+                                   .Margin(m => m.Left(20))
+                                   .VerticalAlignment(VerticalEdge.Bottom)
+                                   .HorizontalAlignment(HorizontalAlignment.Right)
+                                   .ItemTextPosition(Position.Right))
+                            .DataSource(ds => ds
+                                    .Mvc()
+                                    .Controller("Add")
+                                    .LoadAction("GetChartData"))
+                            .DataSourceOptions(dso => dso
+                                    .Filter("['name', '=', '']"))
+                            .SeriesTemplate(st => st
+                                    .NameField("name"))
                 )
             </div>
         </div>
@@ -293,7 +339,7 @@ else
 
     <div class="row justify-content-around">
         <div class="col-md-12">
-            <label for="data-name-select">Data name</label>
+            <label for="data-name-select">Data Fields</label>
         </div>
     </div>
 
@@ -302,7 +348,7 @@ else
             <select class="form-control" name="data-name-select" id="data-name-select">
                 @foreach (var data in @ViewBag.Current)
             {
-                @:<option>@data.name</option>
+                @:<option value="@data.name">@data.readableName</option>
         }
             </select>
         </div>
@@ -337,14 +383,14 @@ else
 
         </div>
     </div>
-    
+
     <div class="row justify-content-around">
         <div class="col-md-5">
             <label for="type-select">Type</label>
         </div>
 
         <div class="col-md-7">
-            <label for="location-select">Screen Location</label>
+            <label for="location-select">Mobile UI Location</label>
             <button class="btn btn-outline-info btn-sm" type="button" data-toggle="collapse" data-target="#info-shot" aria-expanded="false" aria-controls="info-shot">
                 <i style="font-family:'Times New Roman', Times, serif">i</i>
             </button>

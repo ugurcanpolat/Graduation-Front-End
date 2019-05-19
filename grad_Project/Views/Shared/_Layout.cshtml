@@ -19,7 +19,7 @@
 
 <body>
     <nav class="navbar navbar-dark bg-dark fixed-top navbar-expand-md">
-        <a class="navbar-brand" href="/">Graduation</a>
+        <a class="navbar-brand" href="/">IoT Platform</a>
 
         <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
             <span class="navbar-toggler-icon"></span>
@@ -30,17 +30,17 @@
                 @if (@ViewBag.Title == "Homepage")
                 {
                     <li class="active nav-item"><a href="/" class="nav-link">Homepage</a></li>
-                    <li class="nav-item"><a href="/create" class="nav-link">Create</a></li>
+                    <li class="nav-item"><a href="/add" class="nav-link">Add Application</a></li>
                 }
-                else if (@ViewBag.Title == "Create")
+                else if (@ViewBag.Title == "Add Application")
                 {
                     <li class="nav-item"><a href="/" class="nav-link">Homepage</a></li>
-                    <li class="active"><a href="/create" class="nav-link">Create</a></li>
+                    <li class="active"><a href="/add" class="nav-link">Add Application</a></li>
                 }
                 else
                 {
                     <li class="nav-item"><a href="/" class="nav-link">Homepage</a></li>
-                    <li class="nav-item"><a href="/create" class="nav-link">Create</a></li>
+                    <li class="nav-item"><a href="/add" class="nav-link">Add Application</a></li>
                 }
             </ul>
         </div>

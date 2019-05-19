@@ -11,9 +11,9 @@ namespace front_end {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
-                name: "Create configuration",
-                url: "create",
-                defaults: new { controller = "Create", action = "Index" }
+                name: "Add Application",
+                url: "add",
+                defaults: new { controller = "Add", action = "Index" }
             );
 
             routes.MapRoute(

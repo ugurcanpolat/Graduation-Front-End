@@ -19,6 +19,7 @@ namespace front_end.Models
         public string dataType;
         public List<int> arg;
         public string text;
+        public string readableName;
     }
 
     [System.Serializable]

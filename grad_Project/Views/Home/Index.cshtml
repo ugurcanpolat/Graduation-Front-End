@@ -5,11 +5,11 @@
 
 <div class="row justify-content-between">
     <div class="col-auto">
-        <h2>Current Configurations</h2>
+        <h2>Current Applications</h2>
     </div>
 
     <div class="col-auto">
-        <a class="btn btn-primary" href="/create" role="button">Create Configuration</a>
+        <a class="btn btn-primary" href="/add" role="button">Add Application</a>
     </div>
 </div>
 
@@ -19,9 +19,9 @@
         <thead class="thead-light">
             <tr>
                 <th scope="col" width="10%">#</th>
-                <th scope="col" width="40%">Link</th>
-                <th scope="col" width="40%">Selected Data</th>
-                <th scope="col" width="10%"></th>
+                <th scope="col" width="40%">Application Name</th>
+                <th scope="col" width="40%">Web Service Link</th>
+                <th scope="col" width="10%">Data Fields</th>
             </tr>
         </thead>
         <tbody>
@@ -48,9 +48,9 @@
 
                 <tr>
                     <th scope="row" style="vertical-align: middle;">@(i + 1)</th>
+                    <td style="vertical-align: middle;">@Model.names[element.Key]</td>
                     <td style="vertical-align: middle;">@element.Key</td>
-                    <td style="vertical-align: middle;">@str</td>
-                    <td><button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#@element.Key">
+                    <td style="vertical-align: middle; text-align: center;"><button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#@element.Key">
                         Show</button>
                     </td>
                 </tr>
@@ -74,10 +74,41 @@
                                 {
                                     <tr>
                                         <th scope="row">@(j + 1)</th>
-                                        <td>@element.Value[j].name</td>
-                                        <td>@element.Value[j].visual</td>
-                                        <td>@element.Value[j].screenLocation</td>
-                                        <td>@element.Value[j].modifiable</td>
+                                        <td>@element.Value[j].readableName</td>
+                                    @if (element.Value[j].visual == "line") {
+                                        @:<td>Line Chart</td>
+                                    } else if (element.Value[j].visual == "bar") {
+                                        @:<td>Bar Chart</td>
+                                    } else if (element.Value[j].visual == "pie") {
+                                        @:<td>Pie Chart</td>
+                                    } else if (element.Value[j].visual == "text") {
+                                        @:<td>Text</td>
+                                    } else if (element.Value[j].visual == "image") {
+                                        @:<td>Image</td>
+                                    } else if (element.Value[j].visual == "data-text") {
+                                        @:<td>Data with Text</td>
+                                    } else {
+                                        @:<td>No Visual</td>
+                                    }
+
+                                    @if (element.Value[j].screenLocation == 1) {
+                                        @:<td>Top Left</td>
+                                    } else if (element.Value[j].screenLocation == 2) {
+                                        @:<td>Bottom Left</td>
+                                    } else if (element.Value[j].screenLocation == 3) {
+                                        @:<td>Top Right</td>
+                                    } else if (element.Value[j].screenLocation == 4) {
+                                        @:<td>Bottom Right</td>
+                                    } else {
+                                        @:<td>---</td>
+                                    }
+
+                                    @if (element.Value[j].modifiable == true) {
+                                        @:<td>Yes</td>
+                                    } else {
+                                        @:<td>No</td>
+                                    } 
+
                                     </tr>
                                 }
                                 </tbody>

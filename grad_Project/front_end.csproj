@@ -154,7 +154,7 @@
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
-    <Content Include="Views\Create\Index.cshtml" />
+    <Content Include="Views\Add\Index.cshtml" />
     <Content Include="Views\Charts\Pie.cshtml" />
     <Content Include="Scripts\cldr\unresolved.js" />
     <Content Include="Scripts\cldr\supplemental.js" />
@@ -280,12 +280,12 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModel\ViewModelVM.cs" />
-    <Compile Include="Controllers\CreateController.cs" />
+    <Compile Include="Controllers\AddController.cs" />
     <Compile Include="Models\Data.cs" />
     <Compile Include="Controllers\ChartsController.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Views\Create\" />
+    <Folder Include="Views\Add\" />
     <Folder Include="Views\Charts\" />
     <Folder Include="Resources\" />
   </ItemGroup>
